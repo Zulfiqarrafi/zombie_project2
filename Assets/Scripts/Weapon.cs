@@ -16,6 +16,10 @@ public class Weapon : MonoBehaviour
     [SerializeField] float timeBetweenShots = 0.5f;
     [SerializeField] TextMeshProUGUI ammoText;
 
+    // Tambahan untuk audio
+    [SerializeField] AudioSource audioSource; // Referensi Audio Source
+    [SerializeField] AudioClip shootSound;    // AudioClip untuk suara tembakan
+
     bool canShoot = true;
 
     private void OnEnable()
@@ -43,12 +47,21 @@ public class Weapon : MonoBehaviour
         canShoot = false;
         if (ammoSlot.GetCurrentAmmo(ammoType) > 0)
         {
-            PlayMuzzleFlash();
-            ProcessRaycast();
-            ammoSlot.ReduceCurrentAmmo(ammoType);
+            PlayShootSound();  // Memainkan suara tembakan
+            PlayMuzzleFlash(); // Efek tembakan
+            ProcessRaycast();  // Logika raycast
+            ammoSlot.ReduceCurrentAmmo(ammoType); // Kurangi peluru
         }
         yield return new WaitForSeconds(timeBetweenShots);
         canShoot = true;
+    }
+
+    private void PlayShootSound()
+    {
+        if (shootSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(shootSound);
+        }
     }
 
     private void PlayMuzzleFlash()
